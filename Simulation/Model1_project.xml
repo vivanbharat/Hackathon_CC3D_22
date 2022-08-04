@@ -1,0 +1,91 @@
+<CompuCell3D Revision="2" Version="4.3.0">
+   
+   <Metadata>
+      
+      <!-- Basic properties simulation -->
+      <NumberOfProcessors>1</NumberOfProcessors>
+      <DebugOutputFrequency>10</DebugOutputFrequency>
+      <!-- <NonParallelModule Name="Potts"/> -->
+   </Metadata>
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="100" y="100" z="100"/>
+      <Steps>100000</Steps>
+      <Temperature>100.0</Temperature>
+      <NeighborOrder>1</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType Freeze="" TypeId="1" TypeName="ECM"/>
+      <CellType TypeId="2" TypeName="Sen"/>
+      <CellType TypeId="3" TypeName="Non_sen"/>
+   </Plugin>
+   
+   <Plugin Name="ExternalPotential">
+   
+       <!-- External force applied to cell. Each cell type has different force. -->
+       <!-- For more flexible specification of the constraint (done in Python) please use ExternalPotential plugin without specifying per-type parameters -->
+       <!-- Algorithm options are: PixelBased, CenterOfMassBased -->
+       <Algorithm>PixelBased</Algorithm>
+       <!-- <ExternalPotentialParameters CellType="Cell" x="-0.5" y="0.0" z="0.0"/> -->
+       <!-- <ExternalPotentialParameters CellType="Wall" x="-0.5" y="0.0" z="0.0"/> -->
+    </Plugin>
+   
+    <Plugin Name="Volume">
+        <VolumeEnergyParameters CellType="ECM" LambdaVolume="0.0" TargetVolume="50.0"/>
+        <VolumeEnergyParameters CellType="Sen" LambdaVolume="2.0" TargetVolume="125.0"/>
+        <VolumeEnergyParameters CellType="Non_sen" LambdaVolume="5.0" TargetVolume="64.0"/>
+    </Plugin>
+   
+   <Plugin Name="CenterOfMass">
+      
+      <!-- Module tracking center of mass of each cell -->
+   </Plugin>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">10.0</Energy>
+      <Energy Type1="Medium" Type2="ECM">10.0</Energy>
+      <Energy Type1="Medium" Type2="Sen">10.0</Energy>
+      <Energy Type1="Medium" Type2="Non_sen">10.0</Energy>
+      <Energy Type1="ECM" Type2="ECM">10.0</Energy>
+      <Energy Type1="ECM" Type2="Sen">1.0</Energy>
+      <Energy Type1="ECM" Type2="Non_sen">5.0</Energy>
+      <Energy Type1="Sen" Type2="Sen">10.0</Energy>
+      <Energy Type1="Sen" Type2="Non_sen">7.0</Energy>
+      <Energy Type1="Non_sen" Type2="Non_sen">10.0</Energy>
+      <NeighborOrder>7</NeighborOrder>
+   </Plugin>
+   
+   <Steppable Type="UniformInitializer">
+      
+      <!-- Initial layout of cells in the form of rectangular slab -->
+      <Region>
+         <BoxMin x="0" y="0" z="0"/>
+         <BoxMax x="100" y="100" z="1"/>
+         <Gap>0</Gap>
+         <Width>1</Width>
+         <Types>ECM</Types>
+      </Region>
+      <Region>
+            <BoxMin x="20" y="20" z="1"/>
+            <BoxMax x="80" y="80" z="2"/>
+            <Width>5</Width>
+            <Gap>8</Gap>
+            <Types>Sen</Types>
+        </Region>
+        <Region>
+            <BoxMin x="25" y="25" z="1"/>
+            <BoxMax x="80" y="80" z="2"/>
+            <Width>4</Width>
+            <Gap>10</Gap>
+            <Types>Non_sen</Types>
+        </Region>
+      
+   </Steppable>
+</CompuCell3D>
